@@ -15,6 +15,7 @@ import (
 )
 
 var _ porttypes.IBCModule = IBCModule{}
+var icaVal string = "ica"
 
 // IBCModule implements the ICS26 interface for interchain accounts controller chains
 type IBCModule struct {
@@ -41,8 +42,8 @@ func (im IBCModule) OnChanOpenInit(
 	counterparty channeltypes.Counterparty,
 	version string,
 ) error {
-	// id for ica calls
-	icaCtx := ctx.WithContext(context.WithValue(ctx.Context(), "ica", chanCap))
+	// id for ica calls for skip wasm.ClaimCapability
+	icaCtx := ctx.WithContext(context.WithValue(ctx.Context(), "ica", &icaVal))
 	wasmPortID := strings.Replace(portID, icatypes.PortKeyPrefix, "wasm.", 1)
 	if err := im.app.OnChanOpenInit(icaCtx, order, connectionHops, wasmPortID, channelID, chanCap, counterparty, version); err != nil {
 		return err
@@ -79,7 +80,10 @@ func (im IBCModule) OnChanOpenAck(
 	counterpartyChannelID string,
 	counterpartyVersion string,
 ) error {
-	return im.app.OnChanOpenAck(ctx, portID, channelID, counterpartyChannelID, counterpartyVersion)
+	// wasm call SetChannelID
+	icaCtx := ctx.WithContext(context.WithValue(ctx.Context(), "ica", &icaVal))
+	wasmPortID := strings.Replace(portID, icatypes.PortKeyPrefix, "wasm.", 1)
+	return im.app.OnChanOpenAck(icaCtx, wasmPortID, channelID, counterpartyChannelID, counterpartyVersion)
 }
 
 // OnChanOpenConfirm implements the IBCModule interface
@@ -131,7 +135,9 @@ func (im IBCModule) OnAcknowledgementPacket(
 	acknowledgement []byte,
 	relayer sdk.AccAddress,
 ) error {
-	return im.app.OnAcknowledgementPacket(ctx, packet, acknowledgement, relayer)
+	icaCtx := ctx.WithContext(context.WithValue(ctx.Context(), "ica", &icaVal))
+	packet.SourcePort = strings.Replace(packet.SourcePort, icatypes.PortKeyPrefix, "wasm.", 1)
+	return im.app.OnAcknowledgementPacket(icaCtx, packet, acknowledgement, relayer)
 }
 
 // OnTimeoutPacket implements the IBCModule interface.
@@ -140,5 +146,7 @@ func (im IBCModule) OnTimeoutPacket(
 	packet channeltypes.Packet,
 	relayer sdk.AccAddress,
 ) error {
-	return im.app.OnTimeoutPacket(ctx, packet, relayer)
+	icaCtx := ctx.WithContext(context.WithValue(ctx.Context(), "ica", &icaVal))
+	packet.SourcePort = strings.Replace(packet.SourcePort, icatypes.PortKeyPrefix, "wasm.", 1)
+	return im.app.OnTimeoutPacket(icaCtx, packet, relayer)
 }
