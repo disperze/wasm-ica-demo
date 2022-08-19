@@ -44,7 +44,7 @@ func (im IBCModule) OnChanOpenInit(
 ) (string, error) {
 	// id for ica calls
 	icaCtx := ctx.WithContext(context.WithValue(ctx.Context(), "ica", chanCap))
-	wasmPortID := strings.TrimPrefix(portID, icatypes.PortKeyPrefix)
+	wasmPortID := strings.Replace(portID, icatypes.PortKeyPrefix, "wasm.", 1)
 	if _, err := im.app.OnChanOpenInit(icaCtx, order, connectionHops, wasmPortID, channelID, chanCap, counterparty, version); err != nil {
 		return "", err
 	}
