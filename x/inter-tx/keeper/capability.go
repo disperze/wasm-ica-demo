@@ -10,6 +10,12 @@ type WasmCapabitilyKeeper struct {
 	capabilityKeeper types.CapabilityKeeper
 }
 
+func NewWasmCapabitilyKeeper(keeper types.CapabilityKeeper) *WasmCapabitilyKeeper {
+	return &WasmCapabitilyKeeper{
+		capabilityKeeper: keeper,
+	}
+}
+
 func (k *WasmCapabitilyKeeper) GetCapability(ctx sdk.Context, name string) (*capabilitytypes.Capability, bool) {
 	return k.capabilityKeeper.GetCapability(ctx, name)
 }
