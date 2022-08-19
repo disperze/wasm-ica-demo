@@ -368,7 +368,7 @@ func New(
 
 	app.InterTxKeeper = intertxkeeper.NewKeeper(appCodec, keys[intertxtypes.StoreKey], app.ICAControllerKeeper, scopedInterTxKeeper)
 	interTxModule := intertx.NewAppModule(appCodec, app.InterTxKeeper)
-	interTxIBCModule := intertx.NewIBCModule(app.InterTxKeeper)
+	interTxIBCModule := intertx.NewIBCModule(nil, app.InterTxKeeper)
 
 	icaControllerIBCModule := icacontroller.NewIBCModule(app.ICAControllerKeeper, interTxIBCModule)
 	icaHostIBCModule := icahost.NewIBCModule(app.ICAHostKeeper)
