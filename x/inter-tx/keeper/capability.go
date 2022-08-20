@@ -51,7 +51,7 @@ func NewWasmChannelKeeper(keeper types.ChannelKeeper) *WasmChannelKeeper {
 func (k *WasmChannelKeeper) GetChannel(ctx sdk.Context, srcPort, srcChan string) (channel channeltypes.Channel, found bool) {
 	if ctx.Context().Value("ica") != nil {
 		// TODO: check port start with ".wasm" and contract is ica-Account
-		srcPort = strings.Replace(srcPort, "wasm.", icatypes.PortKeyPrefix, 1)
+		srcPort = strings.Replace(srcPort, "wasm.", icatypes.PortPrefix, 1)
 	}
 	return k.channelKeeper.GetChannel(ctx, srcPort, srcChan)
 }
@@ -78,7 +78,7 @@ func (k *WasmChannelKeeper) IterateChannels(ctx sdk.Context, cb func(channeltype
 
 func (k *WasmChannelKeeper) SetChannel(ctx sdk.Context, portID, channelID string, channel channeltypes.Channel) {
 	if ctx.Context().Value("ica") != nil {
-		portID = strings.Replace(portID, "wasm.", icatypes.PortKeyPrefix, 1)
+		portID = strings.Replace(portID, "wasm.", icatypes.PortPrefix, 1)
 	}
 	k.channelKeeper.SetChannel(ctx, portID, channelID, channel)
 }

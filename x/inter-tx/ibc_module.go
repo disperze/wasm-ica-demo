@@ -44,7 +44,7 @@ func (im IBCModule) OnChanOpenInit(
 ) error {
 	// id for ica calls for skip wasm.ClaimCapability
 	icaCtx := ctx.WithContext(context.WithValue(ctx.Context(), "ica", &icaVal))
-	wasmPortID := strings.Replace(portID, icatypes.PortKeyPrefix, "wasm.", 1)
+	wasmPortID := strings.Replace(portID, icatypes.PortPrefix, "wasm.", 1)
 	if err := im.app.OnChanOpenInit(icaCtx, order, connectionHops, wasmPortID, channelID, chanCap, counterparty, version); err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (im IBCModule) OnChanOpenAck(
 ) error {
 	// wasm call SetChannelID
 	icaCtx := ctx.WithContext(context.WithValue(ctx.Context(), "ica", &icaVal))
-	wasmPortID := strings.Replace(portID, icatypes.PortKeyPrefix, "wasm.", 1)
+	wasmPortID := strings.Replace(portID, icatypes.PortPrefix, "wasm.", 1)
 	return im.app.OnChanOpenAck(icaCtx, wasmPortID, channelID, counterpartyChannelID, counterpartyVersion)
 }
 
@@ -136,7 +136,7 @@ func (im IBCModule) OnAcknowledgementPacket(
 	relayer sdk.AccAddress,
 ) error {
 	icaCtx := ctx.WithContext(context.WithValue(ctx.Context(), "ica", &icaVal))
-	packet.SourcePort = strings.Replace(packet.SourcePort, icatypes.PortKeyPrefix, "wasm.", 1)
+	packet.SourcePort = strings.Replace(packet.SourcePort, icatypes.PortPrefix, "wasm.", 1)
 	return im.app.OnAcknowledgementPacket(icaCtx, packet, acknowledgement, relayer)
 }
 
@@ -147,6 +147,6 @@ func (im IBCModule) OnTimeoutPacket(
 	relayer sdk.AccAddress,
 ) error {
 	icaCtx := ctx.WithContext(context.WithValue(ctx.Context(), "ica", &icaVal))
-	packet.SourcePort = strings.Replace(packet.SourcePort, icatypes.PortKeyPrefix, "wasm.", 1)
+	packet.SourcePort = strings.Replace(packet.SourcePort, icatypes.PortPrefix, "wasm.", 1)
 	return im.app.OnTimeoutPacket(icaCtx, packet, relayer)
 }
